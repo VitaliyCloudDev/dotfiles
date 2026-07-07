@@ -2,8 +2,6 @@
 -- init.lua
 -- ~/.config/nvim/init.lua
 -- =============================================================================
-
-
 -- =============================================================================
 -- Базовые настройки (из .vimrc)
 -- =============================================================================
@@ -51,6 +49,37 @@ vim.opt.rtp:prepend(lazypath)
 -- =============================================================================
 
 require("lazy").setup({
+
+  -- Автодополнение
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",   -- источник: LSP
+      "hrsh7th/cmp-buffer",     -- источник: слова из буфера
+      "L3MON4D3/LuaSnip",       -- сниппеты (нужны nvim-cmp)
+      "saadparwaiz1/cmp_luasnip",
+    },
+    config = function()
+      local cmp = require("cmp")
+      cmp.setup({
+        snippet = {
+          expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+          end,
+        },
+        mapping = cmp.mapping.preset.insert({
+          ["<Tab>"]   = cmp.mapping.select_next_item(),
+          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+          ["<CR>"]    = cmp.mapping.confirm({ select = true }),
+          ["<C-Space>"] = cmp.mapping.complete(), -- вызвать вручную
+        }),
+        sources = {
+          { name = "nvim_lsp" },
+          { name = "buffer" },
+        },
+      })
+    end,
+  },
 
   -- Тема — VS Code Dark+
   {
@@ -156,3 +185,17 @@ map("n", "<Esc>", ":nohlsearch<CR>", { silent = true })
 -- Сохранить как в VS Code
 map("n", "<C-s>", ":w<CR>",  { silent = true, desc = "Сохранить" })
 map("i", "<C-s>", "<Esc>:w<CR>a", { silent = true, desc = "Сохранить из insert mode" })
+-- LSP PYTHON
+vim.lsp.config("pyright", {
+  cmd = { "pyright-langserver", "--stdio" },
+  filetypes = { "python" },
+  root_markers = { "pyrightconfig.json", "pyproject.toml", "requirements.txt", ".git" },
+})
+vim.lsp.enable("pyright")
+-- LSP GOLANG
+vim.lsp.config("gopls", {
+  cmd = { "gopls" },
+  filetypes = { "go" },
+  root_markers = { "go.mod", "go.work", ".git" },
+})
+vim.lsp.enable({ "pyright", "gopls" })
