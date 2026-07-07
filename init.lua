@@ -86,7 +86,7 @@ require("lazy").setup({
     "Mofiqul/vscode.nvim",
     priority = 1000, -- грузить первым
     config = function()
-      require("vscode").setup({ style = "dark" })
+      require("vscode").setup({ style = "light" })
       require("vscode").load()
     end,
   },
@@ -199,3 +199,10 @@ vim.lsp.config("gopls", {
   root_markers = { "go.mod", "go.work", ".git" },
 })
 vim.lsp.enable({ "pyright", "gopls" })
+-- Cursor Show Tip
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    vim.diagnostic.open_float(nil, { focus = false })
+  end,
+})
+vim.opt.updatetime = 500  -- миллисекунды, по умолчанию 4000
