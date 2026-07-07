@@ -87,7 +87,7 @@ require("lazy").setup({
     "Mofiqul/vscode.nvim",
     priority = 1000, -- грузить первым
     config = function()
-      require("vscode").setup({ style = "light" })
+      require("vscode").setup({ style = "dark" })
       require("vscode").load()
     end,
   },
