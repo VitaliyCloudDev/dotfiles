@@ -92,18 +92,7 @@ require("lazy").setup({
     end,
   },
 
--- Подсветка синтаксиса (намного лучше чем встроенная)
-  {
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
-    main = "nvim-treesitter.configs",
-    opts = {
-      ensure_installed = { "lua", "python", "javascript", "typescript", "json", "yaml", "markdown" },
-      highlight = { enable = true },
-      indent    = { enable = true },
-    },
-  },
+vim.treesitter.start()
 
   -- Нечёткий поиск файлов (как Ctrl+P в VS Code)
   {
