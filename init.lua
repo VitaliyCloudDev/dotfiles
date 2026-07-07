@@ -92,8 +92,6 @@ require("lazy").setup({
     end,
   },
 
-vim.treesitter.start()
-
   -- Нечёткий поиск файлов (как Ctrl+P в VS Code)
   {
     "nvim-telescope/telescope.nvim",
