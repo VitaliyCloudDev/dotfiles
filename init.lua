@@ -20,6 +20,7 @@ vim.opt.hidden      = true
 vim.opt.backspace   = "indent,eol,start"
 vim.opt.mouse       = "a"
 vim.opt.scrolloff   = 8
+vim.opt.shell = "/bin/bash"
 
 -- Дополнительно полезное
 vim.opt.number         = true   -- номера строк
