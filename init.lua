@@ -2,6 +2,7 @@
 -- init.lua
 -- ~/.config/nvim/init.lua
 -- =============================================================================
+
 -- =============================================================================
 -- Базовые настройки (из .vimrc)
 -- =============================================================================
@@ -20,13 +21,16 @@ vim.opt.hidden      = true
 vim.opt.backspace   = "indent,eol,start"
 vim.opt.mouse       = "a"
 vim.opt.scrolloff   = 8
-vim.opt.shell = "/bin/bash"
+vim.opt.shell       = "/bin/bash"
+vim.opt.updatetime  = 500  -- для CursorHold, по умолчанию 4000
 
 -- Дополнительно полезное
 vim.opt.number         = true   -- номера строк
 vim.opt.relativenumber = true   -- относительные номера (удобно для движений)
 vim.opt.signcolumn     = "yes"  -- колонка слева для диагностики/git (не прыгает)
 vim.opt.termguicolors  = true   -- 24-bit цвета
+
+vim.g.mapleader = " "           -- leader = пробел
 
 
 -- =============================================================================
@@ -51,13 +55,36 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 
+  -- Тема — VS Code Dark+
+  {
+    "Mofiqul/vscode.nvim",
+    priority = 1000, -- грузить первым
+    config = function()
+      require("vscode").setup({ style = "dark" })
+      require("vscode").load()
+      vim.api.nvim_set_hl(0, "CursorLine", { bg = "#2a2d2e" })
+    end,
+  },
+
+  -- Mason — менеджер установки LSP серверов
+  {
+    "mason-org/mason-lspconfig.nvim",
+    opts = {
+      ensure_installed = { "pyright", "gopls", "ts_ls" },
+    },
+    dependencies = {
+      { "mason-org/mason.nvim", opts = {} },
+      "neovim/nvim-lspconfig",
+    },
+  },
+
   -- Автодополнение
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp",   -- источник: LSP
-      "hrsh7th/cmp-buffer",     -- источник: слова из буфера
-      "L3MON4D3/LuaSnip",       -- сниппеты (нужны nvim-cmp)
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "L3MON4D3/LuaSnip",
       "saadparwaiz1/cmp_luasnip",
     },
     config = function()
@@ -69,10 +96,10 @@ require("lazy").setup({
           end,
         },
         mapping = cmp.mapping.preset.insert({
-          ["<Tab>"]   = cmp.mapping.select_next_item(),
-          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-          ["<CR>"]    = cmp.mapping.confirm({ select = true }),
-          ["<C-Space>"] = cmp.mapping.complete(), -- вызвать вручную
+          ["<Tab>"]     = cmp.mapping.select_next_item(),
+          ["<S-Tab>"]   = cmp.mapping.select_prev_item(),
+          ["<CR>"]      = cmp.mapping.confirm({ select = true }),
+          ["<C-Space>"] = cmp.mapping.complete(),
         }),
         sources = {
           { name = "nvim_lsp" },
@@ -82,31 +109,15 @@ require("lazy").setup({
     end,
   },
 
-  -- Тема — VS Code Dark+
-  {
-    "Mofiqul/vscode.nvim",
-    priority = 1000, -- грузить первым
-    config = function()
-      require("vscode").setup({ style = "dark" })
-      require("vscode").load()
-    end,
-  },
-
   -- Файловый менеджер
   {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("nvim-tree").setup({
-        view = {
-          width = 30,
-        },
-        renderer = {
-          group_empty = true, -- схлопывать пустые папки
-        },
-        filters = {
-          dotfiles = false, -- показывать скрытые файлы
-        },
+        view = { width = 30 },
+        renderer = { group_empty = true },
+        filters = { dotfiles = false },
       })
     end,
   },
@@ -166,13 +177,12 @@ require("lazy").setup({
 local map = vim.keymap.set
 
 -- Файловый менеджер (как в VS Code)
-map("n", "<C-b>", ":NvimTreeToggle<CR>",  { silent = true, desc = "Файловое дерево" })
-map("n", "<C-S-e>", ":NvimTreeFocus<CR>", { silent = true, desc = "Фокус на дереве" })
+map("n", "<C-b>",   ":NvimTreeToggle<CR>", { silent = true, desc = "Файловое дерево" })
+map("n", "<C-S-e>", ":NvimTreeFocus<CR>",  { silent = true, desc = "Фокус на дереве" })
 
 -- Поиск файлов (как Ctrl+P в VS Code)
-map("n", "<C-p>", ":Telescope find_files<CR>",  { silent = true, desc = "Найти файл" })
--- Поиск по содержимому
-map("n", "<C-f>", ":Telescope live_grep<CR>",   { silent = true, desc = "Поиск в проекте" })
+map("n", "<C-p>", ":Telescope find_files<CR>", { silent = true, desc = "Найти файл" })
+map("n", "<C-f>", ":Telescope live_grep<CR>",  { silent = true, desc = "Поиск в проекте" })
 
 -- Навигация между окнами
 map("n", "<C-h>", "<C-w>h", { desc = "Окно влево" })
@@ -184,26 +194,25 @@ map("n", "<C-k>", "<C-w>k", { desc = "Окно вверх" })
 map("n", "<Esc>", ":nohlsearch<CR>", { silent = true })
 
 -- Сохранить как в VS Code
-map("n", "<C-s>", ":w<CR>",  { silent = true, desc = "Сохранить" })
-map("i", "<C-s>", "<Esc>:w<CR>a", { silent = true, desc = "Сохранить из insert mode" })
--- LSP PYTHON
-vim.lsp.config("pyright", {
-  cmd = { "pyright-langserver", "--stdio" },
-  filetypes = { "python" },
-  root_markers = { "pyrightconfig.json", "pyproject.toml", "requirements.txt", ".git" },
-})
-vim.lsp.enable("pyright")
--- LSP GOLANG
-vim.lsp.config("gopls", {
-  cmd = { "gopls" },
-  filetypes = { "go" },
-  root_markers = { "go.mod", "go.work", ".git" },
-})
-vim.lsp.enable({ "pyright", "gopls" })
--- Cursor Show Tip
+map("n", "<C-s>", ":w<CR>",           { silent = true, desc = "Сохранить" })
+map("i", "<C-s>", "<Esc>:w<CR>a",     { silent = true, desc = "Сохранить из insert mode" })
+
+-- Терминал
+map("n", "<C-t>", ":terminal<CR>", { silent = true, desc = "Терминал" })
+
+-- LSP диагностика
+map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Показать ошибку" })
+map("n", "[d",        vim.diagnostic.goto_prev,  { desc = "Предыдущая ошибка" })
+map("n", "]d",        vim.diagnostic.goto_next,  { desc = "Следующая ошибка" })
+
+
+-- =============================================================================
+-- Автокоманды
+-- =============================================================================
+
+-- Показывать диагностику при остановке курсора
 vim.api.nvim_create_autocmd("CursorHold", {
   callback = function()
     vim.diagnostic.open_float(nil, { focus = false })
   end,
 })
-vim.opt.updatetime = 500  -- миллисекунды, по умолчанию 4000
