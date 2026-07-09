@@ -58,7 +58,7 @@ require("lazy").setup({
   -- Тема — VS Code Dark+
   {
     "Mofiqul/vscode.nvim",
-    priority = 1000, -- грузить первым
+    priority = 1000,
     config = function()
       require("vscode").setup({ style = "dark" })
       require("vscode").load()
@@ -167,6 +167,56 @@ require("lazy").setup({
     end,
   },
 
+  -- Форматирование кода при сохранении
+  {
+    "stevearc/conform.nvim",
+    event = "BufWritePre",
+    config = function()
+      require("conform").setup({
+        formatters_by_ft = {
+          python     = { "black" },
+          go         = { "gofmt" },
+          javascript = { "prettier" },
+          typescript = { "prettier" },
+          json       = { "prettier" },
+          yaml       = { "prettier" },
+          lua        = { "stylua" },
+        },
+        -- форматировать автоматически при сохранении
+        format_on_save = {
+          timeout_ms = 500,
+          lsp_fallback = true,  -- если форматтер не найден — использовать LSP
+        },
+      })
+    end,
+  },
+
+  -- Подсветка отступов
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    config = function()
+      require("ibl").setup({
+        indent = { char = "│" },
+        scope  = { enabled = true },
+      })
+    end,
+  },
+
+  -- Подсказки по хоткеям
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("which-key").setup()
+      -- Группы для leader-клавиш
+      require("which-key").add({
+        { "<leader>e", desc = "Показать ошибку" },
+        { "<leader>f", group = "Файл" },
+      })
+    end,
+  },
+
 })
 
 
@@ -194,8 +244,8 @@ map("n", "<C-k>", "<C-w>k", { desc = "Окно вверх" })
 map("n", "<Esc>", ":nohlsearch<CR>", { silent = true })
 
 -- Сохранить как в VS Code
-map("n", "<C-s>", ":w<CR>",           { silent = true, desc = "Сохранить" })
-map("i", "<C-s>", "<Esc>:w<CR>a",     { silent = true, desc = "Сохранить из insert mode" })
+map("n", "<C-s>", ":w<CR>",       { silent = true, desc = "Сохранить" })
+map("i", "<C-s>", "<Esc>:w<CR>a", { silent = true, desc = "Сохранить из insert mode" })
 
 -- Терминал
 map("n", "<C-t>", ":terminal<CR>", { silent = true, desc = "Терминал" })
@@ -204,6 +254,11 @@ map("n", "<C-t>", ":terminal<CR>", { silent = true, desc = "Терминал" })
 map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Показать ошибку" })
 map("n", "[d",        vim.diagnostic.goto_prev,  { desc = "Предыдущая ошибка" })
 map("n", "]d",        vim.diagnostic.goto_next,  { desc = "Следующая ошибка" })
+
+-- Форматировать вручную
+map("n", "<leader>ff", function()
+  require("conform").format({ async = true, lsp_fallback = true })
+end, { desc = "Форматировать файл" })
 
 
 -- =============================================================================
