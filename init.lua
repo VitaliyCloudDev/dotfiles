@@ -20,8 +20,9 @@ vim.opt.swapfile    = false
 vim.opt.hidden      = true
 vim.opt.backspace   = "indent,eol,start"
 vim.opt.mouse       = "a"
-vim.opt.scrolloff   = 8
-vim.opt.shell       = "/bin/bash"
+vim.opt.scrolloff    = 8
+vim.opt.shell        = "/bin/bash"
+vim.opt.colorcolumn  = "80"  -- вертикальная линия на 80 символах
 vim.opt.updatetime  = 500  -- для CursorHold, по умолчанию 4000
 
 -- Дополнительно полезное
