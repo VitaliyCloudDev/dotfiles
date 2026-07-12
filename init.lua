@@ -13,7 +13,7 @@ vim.opt.expandtab   = true
 vim.opt.autoindent  = true
 vim.opt.hlsearch    = true
 vim.opt.incsearch   = true
-vim.opt.cursorline  = true
+vim.opt.cursorline  = false
 vim.opt.wrap        = false
 vim.opt.clipboard   = "unnamed"
 vim.opt.swapfile    = false
@@ -60,7 +60,7 @@ require("lazy").setup({
     "Mofiqul/vscode.nvim",
     priority = 1000,
     config = function()
-      require("vscode").setup({ style = "dark" })
+      require("vscode").setup({ style = "light" })
       require("vscode").load()
       vim.api.nvim_set_hl(0, "CursorLine", { bg = "#2a2d2e" })
     end,
@@ -70,7 +70,7 @@ require("lazy").setup({
   {
     "mason-org/mason-lspconfig.nvim",
     opts = {
-      ensure_installed = { "pyright", "gopls", "ts_ls" },
+      ensure_installed = { "pyright" },
     },
     dependencies = {
       { "mason-org/mason.nvim", opts = {} },
