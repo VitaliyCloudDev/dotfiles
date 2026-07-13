@@ -20,9 +20,8 @@ vim.opt.swapfile    = false
 vim.opt.hidden      = true
 vim.opt.backspace   = "indent,eol,start"
 vim.opt.mouse       = "a"
-vim.opt.scrolloff    = 8
-vim.opt.shell        = "/bin/bash"
-vim.opt.colorcolumn  = "80"  -- вертикальная линия на 80 символах
+vim.opt.scrolloff   = 8
+vim.opt.shell       = "/bin/bash"
 vim.opt.updatetime  = 500  -- для CursorHold, по умолчанию 4000
 
 -- Дополнительно полезное
@@ -30,6 +29,7 @@ vim.opt.number         = true   -- номера строк
 vim.opt.relativenumber = true   -- относительные номера (удобно для движений)
 vim.opt.signcolumn     = "yes"  -- колонка слева для диагностики/git (не прыгает)
 vim.opt.termguicolors  = true   -- 24-bit цвета
+vim.opt.colorcolumn = "80"
 
 vim.g.mapleader = " "           -- leader = пробел
 
@@ -270,5 +270,10 @@ end, { desc = "Форматировать файл" })
 vim.api.nvim_create_autocmd("CursorHold", {
   callback = function()
     vim.diagnostic.open_float(nil, { focus = false })
+  end,
+})
+vim.api.nvim_create_autocmd("VimResized", {
+  callback = function()
+    vim.cmd("wincmd =")
   end,
 })
