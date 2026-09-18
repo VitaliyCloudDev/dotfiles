@@ -25,8 +25,6 @@ vim.opt.shell       = "/bin/bash"
 vim.opt.updatetime  = 500  -- для CursorHold, по умолчанию 4000
 
 -- Дополнительно полезное
-vim.opt.number         = true   -- номера строк
-vim.opt.relativenumber = true   -- относительные номера (удобно для движений)
 vim.opt.signcolumn     = "yes"  -- колонка слева для диагностики/git (не прыгает)
 vim.opt.termguicolors  = true   -- 24-bit цвета
 vim.opt.colorcolumn = "80"
@@ -68,6 +66,9 @@ require("lazy").setup({
   },
 
   -- Mason — менеджер установки LSP серверов
+  -- ensure_installed ставит сервер через Mason, а automatic_enable (включён
+  -- по умолчанию) сам вызывает vim.lsp.enable() — это актуальный способ
+  -- для Neovim 0.11+, отдельно настраивать через require('lspconfig') уже не нужно
   {
     "mason-org/mason-lspconfig.nvim",
     opts = {
